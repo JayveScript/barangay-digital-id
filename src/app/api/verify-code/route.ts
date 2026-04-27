@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { Role } from "@prisma/client";
+
 
 export async function POST(req: Request) {
   try {
@@ -97,7 +97,7 @@ export async function POST(req: Request) {
           username: pending.username,
           email: normalizedEmail,
           password: pending.passwordHash,
-          role: Role.RESIDENT,
+          role: "RESIDENT",
           isVerified: true,
           barangayId: barangay.id,
         },
