@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { PrismaClient } from "@prisma/client";
 
 
 export async function POST(req: Request) {
@@ -78,7 +79,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const result = await db.$transaction(async (tx) => {
+    const result = await db.$transaction(async (tx: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => {
       let barangay = await tx.barangay.findFirst({
         where: { name: STATIC_BARANGAY },
       });
