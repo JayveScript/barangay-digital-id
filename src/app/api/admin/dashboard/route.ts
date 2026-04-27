@@ -42,8 +42,9 @@ export async function GET() {
     const totalResidents = residents.length;
     const totalStaff = staffUsers.length;
     const totalVerifiedResidents = residents.filter(
-      (resident) => resident.user?.isVerified
-    ).length;
+  (resident: { user?: { isVerified?: boolean } | null }) =>
+    resident.user?.isVerified
+).length;
 
     return NextResponse.json({
       stats: {
