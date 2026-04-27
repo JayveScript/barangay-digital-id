@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { db } from "@/lib/db";
-import { Role } from "@prisma/client";
+
 
 export async function GET() {
   try {
@@ -46,7 +46,7 @@ export async function GET() {
         username: "admin",
         email: "admin@barangay.com",
         password: passwordHash,
-        role: Role.BARANGAY_ADMIN,
+        role: "BARANGAY_ADMIN",
         isVerified: true,
         barangayId: barangay.id,
       },
