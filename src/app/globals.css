@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+.input {
+  @apply w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-sky-500;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2563eb;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}

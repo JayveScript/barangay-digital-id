@@ -1,0 +1,267 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  SUPER_ADMIN
+  BARANGAY_ADMIN
+  DOCTOR
+  NURSE
+  BHW
+  MIDWIFE
+  STAFF
+  RESIDENT
+}
+
+enum Sex {
+  MALE
+  FEMALE
+}
+
+enum CivilStatus {
+  SINGLE
+  MARRIED
+  WIDOWED
+  ANNULLED
+  SEPARATED
+  COHABITANT
+}
+
+model Barangay {
+  id           String   @id @default(uuid())
+  name         String
+  municipality String?
+  
+
+  users        User[]
+  residents    Resident[]
+
+  createdAt    DateTime @default(now())
+}
+
+model User {
+  id          String   @id @default(uuid())
+  fullName    String?
+  username    String   @unique
+  email       String?  @unique
+  phoneNumber String?  @unique
+  password    String
+  role        Role     @default(RESIDENT)
+  isVerified  Boolean  @default(false)
+
+  barangayId  String
+  barangay    Barangay @relation(fields: [barangayId], references: [id])
+
+  resident    Resident?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Resident {
+  id                     String                       @id @default(uuid())
+
+  // Step 1 - Identifying Data
+  lastName               String
+  firstName              String
+  middleName             String?
+  age                    Int
+  sex                    Sex
+  birthDate              DateTime
+  religion               String?
+  houseStreet String?
+  completeAddress        String
+  barangayName String @default("Barangay 19-B")
+city          String @default("Davao City")
+  civilStatus            CivilStatus
+  contactNumber          String?
+  educationalAttainment  String?
+  occupation             String?
+  accompanyingPerson     String?
+  relationship           String?
+  spouseMaidenName       String?
+  spouseOccupation       String?
+  spouseContactNumber    String?
+
+  email                  String?                      @unique
+  phoneNumber            String?                      @unique
+
+  userId                 String                       @unique
+  user                   User                         @relation(fields: [userId], references: [id])
+
+  barangayId             String
+  barangay               Barangay                     @relation(fields: [barangayId], references: [id])
+
+  medicalHistory         ResidentMedicalHistory?
+  familyHistory          ResidentFamilyHistory?
+  personalSocialHistory  ResidentPersonalSocialHistory?
+
+  createdAt              DateTime                     @default(now())
+  updatedAt              DateTime                     @updatedAt
+}
+
+model ResidentMedicalHistory {
+  id                           String    @id @default(uuid())
+
+  residentId                   String    @unique
+  resident                     Resident  @relation(fields: [residentId], references: [id], onDelete: Cascade)
+
+  // Step 2 - Past Medical History
+  hasHypertension              Boolean   @default(false)
+  hasDiabetes                  Boolean   @default(false)
+  hasStiHiv                    Boolean   @default(false)
+  hasHeartDisease              Boolean   @default(false)
+  hasKidneyFailure             Boolean   @default(false)
+  hasTuberculosis              Boolean   @default(false)
+
+  hasAllergies                 Boolean   @default(false)
+  allergiesDetails             String?
+
+  hasCancer                    Boolean   @default(false)
+  cancerDetails                String?
+
+  hasOtherConditions           Boolean   @default(false)
+  otherConditionsDetails       String?
+
+  maintenanceMedications       String?
+  previousIllnessesSurgeries   String?
+
+  createdAt                    DateTime  @default(now())
+  updatedAt                    DateTime  @updatedAt
+}
+
+model ResidentFamilyHistory {
+  id                    String    @id @default(uuid())
+
+  residentId            String    @unique
+  resident              Resident  @relation(fields: [residentId], references: [id], onDelete: Cascade)
+
+  // Step 3 - Family History
+  asthmaAllergies       Boolean   @default(false)
+  birthDefects          Boolean   @default(false)
+  cancer                Boolean   @default(false)
+  dementia              Boolean   @default(false)
+  diabetes              Boolean   @default(false)
+  hypertension          Boolean   @default(false)
+  kidneyDisease         Boolean   @default(false)
+  mentalIllness         Boolean   @default(false)
+
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model ResidentPersonalSocialHistory {
+  id                            String    @id @default(uuid())
+
+  residentId                    String    @unique
+  resident                      Resident  @relation(fields: [residentId], references: [id], onDelete: Cascade)
+
+  // Step 4 - Personal / Social History
+  eatsHealthyDiet               Boolean   @default(false)
+  adequatePhysicalActivity      Boolean   @default(false)
+  sufficientRestSleep           Boolean   @default(false)
+  normalGrowthDevelopment       Boolean   @default(false)
+  multipleSexPartners           Boolean   @default(false)
+
+  smokesTobacco                 Boolean   @default(false)
+  tobaccoPacksPerYear           String?
+
+  drinksAlcohol                 Boolean   @default(false)
+  alcoholBottlesPerDay          String?
+
+  takesIllicitDrugs             Boolean   @default(false)
+  illicitDrugsDetails           String?
+
+  createdAt                     DateTime  @default(now())
+  updatedAt                     DateTime  @updatedAt
+}
+
+model PendingRegistration {
+  id                            String    @id @default(uuid())
+
+  // Step 1 - Identifying Data
+  lastName                      String
+  firstName                     String
+  middleName                    String?
+  age                           Int
+  sex                           Sex
+  birthDate                     DateTime
+  religion                      String?
+  completeAddress               String
+  barangayName                  String
+  city                          String?
+  civilStatus                   CivilStatus
+  contactNumber                 String?
+  educationalAttainment         String?
+  occupation                    String?
+  accompanyingPerson            String?
+  relationship                  String?
+  spouseMaidenName              String?
+  spouseOccupation              String?
+  spouseContactNumber           String?
+
+  // Step 2 - Past Medical History
+  hasHypertension               Boolean   @default(false)
+  hasDiabetes                   Boolean   @default(false)
+  hasStiHiv                     Boolean   @default(false)
+  hasHeartDisease               Boolean   @default(false)
+  hasKidneyFailure              Boolean   @default(false)
+  hasTuberculosis               Boolean   @default(false)
+
+  hasAllergies                  Boolean   @default(false)
+  allergiesDetails              String?
+
+  hasCancer                     Boolean   @default(false)
+  cancerDetails                 String?
+
+  hasOtherConditions            Boolean   @default(false)
+  otherConditionsDetails        String?
+
+  maintenanceMedications        String?
+  previousIllnessesSurgeries    String?
+
+  // Step 3 - Family History
+  familyAsthmaAllergies         Boolean   @default(false)
+  familyBirthDefects            Boolean   @default(false)
+  familyCancer                  Boolean   @default(false)
+  familyDementia                Boolean   @default(false)
+  familyDiabetes                Boolean   @default(false)
+  familyHypertension            Boolean   @default(false)
+  familyKidneyDisease           Boolean   @default(false)
+  familyMentalIllness           Boolean   @default(false)
+
+  // Step 4 - Personal / Social History
+  eatsHealthyDiet               Boolean   @default(false)
+  adequatePhysicalActivity      Boolean   @default(false)
+  sufficientRestSleep           Boolean   @default(false)
+  normalGrowthDevelopment       Boolean   @default(false)
+  multipleSexPartners           Boolean   @default(false)
+
+  smokesTobacco                 Boolean   @default(false)
+  tobaccoPacksPerYear           String?
+
+  drinksAlcohol                 Boolean   @default(false)
+  alcoholBottlesPerDay          String?
+
+  takesIllicitDrugs             Boolean   @default(false)
+  illicitDrugsDetails           String?
+
+  // Step 5 - Account Setup + Verification
+  username                      String
+  email                         String
+  passwordHash                  String
+
+  otpCode                       String
+  otpExpiresAt                  DateTime
+  isVerified                    Boolean   @default(false)
+
+  createdAt                     DateTime  @default(now())
+  updatedAt                     DateTime  @updatedAt
+
+  @@unique([email])
+  @@unique([username])
+}
