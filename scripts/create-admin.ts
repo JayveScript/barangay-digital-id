@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { PrismaClient, Role } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
 
 const db = new PrismaClient();
@@ -41,7 +41,7 @@ async function main() {
       username: "admin",
       email: "admin@barangay.com",
       password: passwordHash,
-      role: Role.BARANGAY_ADMIN,
+      role: "BARANGAY_ADMIN",
       isVerified: true,
       barangayId: barangay.id,
     },
