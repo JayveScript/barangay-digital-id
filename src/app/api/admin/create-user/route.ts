@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { db } from "@/lib/db";
-import { Role } from "@prisma/client";
+
 
 const STATIC_BARANGAY = "Barangay 19-B";
 
@@ -80,7 +80,7 @@ export async function POST(req: Request) {
         fullName: fullName.trim(),
         username: username.trim(),
         password: passwordHash,
-        role: role.trim() as Role,
+        
         isVerified: true,
         barangayId: barangay.id,
       },
