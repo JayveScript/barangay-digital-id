@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import { hash } from "bcryptjs";
 
 const db = new PrismaClient();
@@ -41,7 +41,7 @@ async function main() {
       username: "admin",
       email: "admin@barangay.com",
       password: passwordHash,
-      role: "BARANGAY_ADMIN",
+      role: Role.BARANGAY_ADMIN,
       isVerified: true,
       barangayId: barangay.id,
     },
@@ -59,7 +59,7 @@ async function main() {
 main()
   .catch((error) => {
     console.error("CREATE_ADMIN_ERROR", error);
-    process.exit(1);
+    
   })
   .finally(async () => {
     await db.$disconnect();
