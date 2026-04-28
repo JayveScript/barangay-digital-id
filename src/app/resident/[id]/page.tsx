@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma";
 
-export default async function PublicResidentPage({
-  params,
-}: {
+export const dynamic = "force-dynamic";
+
+type PageProps = {
   params: Promise<{ id: string }>;
-}) {
+};
+
+export default async function PublicResidentPage({ params }: PageProps) {
   const { id } = await params;
 
   const resident = await prisma.resident.findUnique({
@@ -17,10 +19,13 @@ export default async function PublicResidentPage({
   if (!resident) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#EEF4FF] p-6">
-        <div className="rounded-3xl bg-white p-8 shadow-xl">
+        <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
           <h1 className="text-xl font-bold text-slate-900">
-            Resident not found
+            Resident Not Found
           </h1>
+          <p className="mt-2 text-sm text-slate-500">
+            This Digital ID record does not exist.
+          </p>
         </div>
       </main>
     );
