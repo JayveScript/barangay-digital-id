@@ -13,6 +13,7 @@ export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     adapter,
+    log: ["error"],
   });
 
 if (process.env.NODE_ENV !== "production") {
