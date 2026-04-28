@@ -32,8 +32,8 @@ export default async function PublicResidentPage({ params }: PageProps) {
             Unable to load resident data
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Please check the database connection or try again later.
-          </p>
+  {error instanceof Error ? error.message : "Unknown database error"}
+</p>
         </div>
       </main>
     );
