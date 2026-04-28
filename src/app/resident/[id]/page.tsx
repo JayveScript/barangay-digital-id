@@ -1,25 +1,48 @@
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 type PageProps = {
-  params: Promise<{ id: string }>;
+  params: Promise<{
+    id: string;
+  }>;
 };
 
 export default async function PublicResidentPage({ params }: PageProps) {
   const { id } = await params;
 
-  const resident = await prisma.resident.findUnique({
-    where: { id },
-    include: {
-      user: true,
-    },
-  });
+  let resident = null;
+
+  try {
+    resident = await prisma.resident.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        barangay: true,
+      },
+    });
+  } catch (error) {
+    console.error("PUBLIC_RESIDENT_PAGE_ERROR", error);
+
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#EEF4FF] p-6">
+        <div className="max-w-md rounded-3xl bg-white p-8 text-center shadow-xl">
+          <h1 className="text-xl font-bold text-red-600">
+            Unable to load resident data
+          </h1>
+          <p className="mt-2 text-sm text-slate-500">
+            Please check the database connection or try again later.
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   if (!resident) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#EEF4FF] p-6">
-        <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
+        <div className="max-w-md rounded-3xl bg-white p-8 text-center shadow-xl">
           <h1 className="text-xl font-bold text-slate-900">
             Resident Not Found
           </h1>
@@ -31,7 +54,9 @@ export default async function PublicResidentPage({ params }: PageProps) {
     );
   }
 
-  const fullName = `${resident.firstName} ${resident.middleName ?? ""} ${resident.lastName}`
+  const fullName = `${resident.firstName ?? ""} ${resident.middleName ?? ""} ${
+    resident.lastName ?? ""
+  }`
     .replace(/\s+/g, " ")
     .trim();
 
@@ -75,10 +100,11 @@ export default async function PublicResidentPage({ params }: PageProps) {
             value={resident.educationalAttainment}
           />
           <Info label="Complete Address" value={resident.completeAddress} />
+         
           <Info label="Barangay" value={resident.barangayName} />
           <Info label="City" value={resident.city} />
           <Info label="Contact Number" value={resident.contactNumber} />
-          <Info label="Email" value={resident.user?.email} />
+          <Info label="Email" value={resident.email ?? resident.user?.email} />
         </div>
       </div>
     </main>
