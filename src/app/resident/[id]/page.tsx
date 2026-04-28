@@ -1,30 +1,45 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "../../../lib/prisma";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 type PageProps = {
-  params: Promise<{
-    id: string;
-  }>;
+  params: Promise<{ id: string }>;
 };
 
 export default async function PublicResidentPage({ params }: PageProps) {
   const { id } = await params;
 
-  let resident = null;
+  let resident;
 
   try {
     resident = await prisma.resident.findUnique({
       where: { id },
-      include: {
-        user: true,
-        barangay: true,
+      select: {
+        id: true,
+        firstName: true,
+        middleName: true,
+        lastName: true,
+        sex: true,
+        age: true,
+        birthDate: true,
+        civilStatus: true,
+        religion: true,
+        occupation: true,
+        educationalAttainment: true,
+        completeAddress: true,
+        barangayName: true,
+        city: true,
+        contactNumber: true,
+        email: true,
+        user: {
+          select: {
+            email: true,
+          },
+        },
       },
     });
   } catch (error) {
-    console.error("PUBLIC_RESIDENT_PAGE_ERROR", error);
-
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#EEF4FF] p-6">
         <div className="max-w-md rounded-3xl bg-white p-8 text-center shadow-xl">
@@ -32,8 +47,8 @@ export default async function PublicResidentPage({ params }: PageProps) {
             Unable to load resident data
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-  {error instanceof Error ? error.message : "Unknown database error"}
-</p>
+            {error instanceof Error ? error.message : "Unknown database error"}
+          </p>
         </div>
       </main>
     );
@@ -100,7 +115,6 @@ export default async function PublicResidentPage({ params }: PageProps) {
             value={resident.educationalAttainment}
           />
           <Info label="Complete Address" value={resident.completeAddress} />
-         
           <Info label="Barangay" value={resident.barangayName} />
           <Info label="City" value={resident.city} />
           <Info label="Contact Number" value={resident.contactNumber} />
