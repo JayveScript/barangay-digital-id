@@ -10,55 +10,97 @@ type PageProps = {
 export default async function PublicResidentPage({ params }: PageProps) {
   const { id } = await params;
 
-  let resident;
+  const resident = await prisma.resident.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      firstName: true,
+      middleName: true,
+      lastName: true,
+      age: true,
+      sex: true,
+      birthDate: true,
+      religion: true,
+      houseStreet: true,
+      completeAddress: true,
+      barangayName: true,
+      city: true,
+      civilStatus: true,
+      contactNumber: true,
+      educationalAttainment: true,
+      occupation: true,
+      accompanyingPerson: true,
+      relationship: true,
+      spouseMaidenName: true,
+      spouseOccupation: true,
+      spouseContactNumber: true,
+      email: true,
+      phoneNumber: true,
 
-  try {
-    resident = await prisma.resident.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        firstName: true,
-        middleName: true,
-        lastName: true,
-        sex: true,
-        age: true,
-        birthDate: true,
-        civilStatus: true,
-        religion: true,
-        occupation: true,
-        educationalAttainment: true,
-        completeAddress: true,
-        barangayName: true,
-        city: true,
-        contactNumber: true,
-        email: true,
-        user: {
-          select: {
-            email: true,
-          },
+      user: {
+        select: {
+          username: true,
+          email: true,
+          phoneNumber: true,
+          isVerified: true,
         },
       },
-    });
-  } catch (error) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#EEF4FF] p-6">
-        <div className="max-w-md rounded-3xl bg-white p-8 text-center shadow-xl">
-          <h1 className="text-xl font-bold text-red-600">
-            Unable to load resident data
-          </h1>
-          <p className="mt-2 text-sm text-slate-500">
-            {error instanceof Error ? error.message : "Unknown database error"}
-          </p>
-        </div>
-      </main>
-    );
-  }
+
+      medicalHistory: {
+        select: {
+          hasHypertension: true,
+          hasDiabetes: true,
+          hasStiHiv: true,
+          hasHeartDisease: true,
+          hasKidneyFailure: true,
+          hasTuberculosis: true,
+          hasAllergies: true,
+          allergiesDetails: true,
+          hasCancer: true,
+          cancerDetails: true,
+          hasOtherConditions: true,
+          otherConditionsDetails: true,
+          maintenanceMedications: true,
+          previousIllnessesSurgeries: true,
+        },
+      },
+
+      familyHistory: {
+        select: {
+          asthmaAllergies: true,
+          birthDefects: true,
+          cancer: true,
+          dementia: true,
+          diabetes: true,
+          hypertension: true,
+          kidneyDisease: true,
+          mentalIllness: true,
+        },
+      },
+
+      personalSocialHistory: {
+        select: {
+          eatsHealthyDiet: true,
+          adequatePhysicalActivity: true,
+          sufficientRestSleep: true,
+          normalGrowthDevelopment: true,
+          multipleSexPartners: true,
+          smokesTobacco: true,
+          tobaccoPacksPerYear: true,
+          drinksAlcohol: true,
+          alcoholBottlesPerDay: true,
+          takesIllicitDrugs: true,
+          illicitDrugsDetails: true,
+        },
+      },
+    },
+  });
 
   if (!resident) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#EEF4FF] p-6">
-        <div className="max-w-md rounded-3xl bg-white p-8 text-center shadow-xl">
-          <h1 className="text-xl font-bold text-slate-900">
+      <main className="flex min-h-screen items-center justify-center bg-[#EEF4FF] p-5">
+        <div className="rounded-3xl bg-white p-8 text-center shadow-xl">
+          <h1 className="text-xl font-black text-slate-900">
             Resident Not Found
           </h1>
           <p className="mt-2 text-sm text-slate-500">
@@ -75,54 +117,346 @@ export default async function PublicResidentPage({ params }: PageProps) {
     .replace(/\s+/g, " ")
     .trim();
 
-  return (
-    <main className="min-h-screen bg-[#EEF4FF] p-6">
-      <div className="mx-auto max-w-2xl rounded-[30px] border border-blue-100 bg-white p-6 shadow-xl">
-        <div className="mb-6 flex items-center gap-4">
-          <img
-            src="/images/davao-logo.png"
-            alt="Barangay Logo"
-            className="h-16 w-16 rounded-full object-contain"
-          />
+  const birthDate = resident.birthDate
+    ? new Date(resident.birthDate).toLocaleDateString()
+    : "";
 
-          <div>
-            <h1 className="text-2xl font-black text-blue-900">
-              Barangay Health Digital ID
-            </h1>
-            <p className="text-sm text-slate-500">
-              Public resident verification
-            </p>
+  return (
+    <main className="min-h-screen bg-[#EEF4FF] p-4">
+      <style>{`
+        .tab-input { display: none; }
+        .tab-panel { display: none; }
+
+        #tab-identifying:checked ~ .tab-panels .panel-identifying,
+        #tab-medical:checked ~ .tab-panels .panel-medical,
+        #tab-family:checked ~ .tab-panels .panel-family,
+        #tab-social:checked ~ .tab-panels .panel-social {
+          display: block;
+        }
+
+        #tab-identifying:checked ~ .tab-nav label[for="tab-identifying"],
+        #tab-medical:checked ~ .tab-nav label[for="tab-medical"],
+        #tab-family:checked ~ .tab-nav label[for="tab-family"],
+        #tab-social:checked ~ .tab-nav label[for="tab-social"] {
+          background: #2563eb;
+          color: white;
+          box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+        }
+      `}</style>
+
+      <div className="mx-auto max-w-4xl overflow-hidden rounded-[30px] bg-white shadow-2xl">
+        <div className="bg-gradient-to-r from-blue-950 to-blue-700 px-5 py-6 text-white">
+          <div className="flex items-center gap-4">
+            <img
+              src="/images/davao-logo.png"
+              alt="Barangay Logo"
+              className="h-16 w-16 rounded-full bg-white object-contain p-1"
+            />
+
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-blue-100">
+                Barangay Health
+              </p>
+              <h1 className="text-2xl font-black leading-tight">
+                Digital Resident ID
+              </h1>
+              <p className="mt-1 text-sm text-blue-100">
+                Public resident verification
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="space-y-3">
-          <Info label="Full Name" value={fullName} />
-          <Info label="Sex" value={resident.sex} />
-          <Info label="Age" value={resident.age} />
-          <Info
-            label="Birth Date"
-            value={
-              resident.birthDate
-                ? new Date(resident.birthDate).toLocaleDateString()
-                : ""
-            }
+        <div>
+          <input
+            className="tab-input"
+            type="radio"
+            name="resident-tab"
+            id="tab-identifying"
+            defaultChecked
           />
-          <Info label="Civil Status" value={resident.civilStatus} />
-          <Info label="Religion" value={resident.religion} />
-          <Info label="Occupation" value={resident.occupation} />
-          <Info
-            label="Educational Attainment"
-            value={resident.educationalAttainment}
+          <input
+            className="tab-input"
+            type="radio"
+            name="resident-tab"
+            id="tab-medical"
           />
-          <Info label="Complete Address" value={resident.completeAddress} />
-          <Info label="Barangay" value={resident.barangayName} />
-          <Info label="City" value={resident.city} />
-          <Info label="Contact Number" value={resident.contactNumber} />
-          <Info label="Email" value={resident.email ?? resident.user?.email} />
+          <input
+            className="tab-input"
+            type="radio"
+            name="resident-tab"
+            id="tab-family"
+          />
+          <input
+            className="tab-input"
+            type="radio"
+            name="resident-tab"
+            id="tab-social"
+          />
+
+          <div className="tab-nav flex gap-2 overflow-x-auto border-b border-blue-100 bg-white p-3">
+            <label
+              htmlFor="tab-identifying"
+              className="min-w-max cursor-pointer rounded-2xl px-4 py-3 text-sm font-black text-slate-600 transition"
+            >
+              Identifying Data
+            </label>
+            <label
+              htmlFor="tab-medical"
+              className="min-w-max cursor-pointer rounded-2xl px-4 py-3 text-sm font-black text-slate-600 transition"
+            >
+              Past Medical History
+            </label>
+            <label
+              htmlFor="tab-family"
+              className="min-w-max cursor-pointer rounded-2xl px-4 py-3 text-sm font-black text-slate-600 transition"
+            >
+              Family History
+            </label>
+            <label
+              htmlFor="tab-social"
+              className="min-w-max cursor-pointer rounded-2xl px-4 py-3 text-sm font-black text-slate-600 transition"
+            >
+              Personal / Social History
+            </label>
+          </div>
+
+          <div className="tab-panels p-5">
+            <section className="tab-panel panel-identifying">
+              <SectionTitle title="Identifying Data" />
+              <div className="space-y-3">
+                <Info label="Full Name" value={fullName} />
+                <TwoCols>
+                  <Info label="Age" value={resident.age} />
+                  <Info label="Sex" value={resident.sex} />
+                </TwoCols>
+                <Info label="Birth Date" value={birthDate} />
+                <Info label="Civil Status" value={resident.civilStatus} />
+                <Info label="Religion" value={resident.religion} />
+                <Info
+                  label="Educational Attainment"
+                  value={resident.educationalAttainment}
+                />
+                <Info label="Occupation" value={resident.occupation} />
+                <Info label="Contact Number" value={resident.contactNumber} />
+                <Info
+                  label="Email"
+                  value={resident.email ?? resident.user?.email}
+                />
+                <Info
+                  label="Phone Number"
+                  value={resident.phoneNumber ?? resident.user?.phoneNumber}
+                />
+                <Info label="Username" value={resident.user?.username} />
+                <Info
+                  label="Verified Resident"
+                  value={resident.user?.isVerified ? "Yes" : "No"}
+                />
+                <Info label="House / Street" value={resident.houseStreet} />
+                <Info
+                  label="Complete Address"
+                  value={resident.completeAddress}
+                />
+                
+                <Info
+                  label="Accompanying Person"
+                  value={resident.accompanyingPerson}
+                />
+                <Info label="Relationship" value={resident.relationship} />
+                <Info
+                  label="Spouse Maiden Name"
+                  value={resident.spouseMaidenName}
+                />
+                <Info
+                  label="Spouse Occupation"
+                  value={resident.spouseOccupation}
+                />
+                <Info
+                  label="Spouse Contact Number"
+                  value={resident.spouseContactNumber}
+                />
+              </div>
+            </section>
+
+            <section className="tab-panel panel-medical">
+              <SectionTitle title="Past Medical History" />
+              <div className="space-y-3">
+                <Info
+                  label="Hypertension"
+                  value={yesNo(resident.medicalHistory?.hasHypertension)}
+                />
+                <Info
+                  label="Diabetes"
+                  value={yesNo(resident.medicalHistory?.hasDiabetes)}
+                />
+                <Info
+                  label="STI / HIV"
+                  value={yesNo(resident.medicalHistory?.hasStiHiv)}
+                />
+                <Info
+                  label="Heart Disease"
+                  value={yesNo(resident.medicalHistory?.hasHeartDisease)}
+                />
+                <Info
+                  label="Kidney Failure"
+                  value={yesNo(resident.medicalHistory?.hasKidneyFailure)}
+                />
+                <Info
+                  label="Tuberculosis"
+                  value={yesNo(resident.medicalHistory?.hasTuberculosis)}
+                />
+                <Info
+                  label="Allergies"
+                  value={yesNo(resident.medicalHistory?.hasAllergies)}
+                />
+                <Info
+                  label="Allergies Details"
+                  value={resident.medicalHistory?.allergiesDetails}
+                />
+                <Info
+                  label="Cancer"
+                  value={yesNo(resident.medicalHistory?.hasCancer)}
+                />
+                <Info
+                  label="Cancer Details"
+                  value={resident.medicalHistory?.cancerDetails}
+                />
+                <Info
+                  label="Other Conditions"
+                  value={yesNo(resident.medicalHistory?.hasOtherConditions)}
+                />
+                <Info
+                  label="Other Conditions Details"
+                  value={resident.medicalHistory?.otherConditionsDetails}
+                />
+                <Info
+                  label="Maintenance Medications"
+                  value={resident.medicalHistory?.maintenanceMedications}
+                />
+                <Info
+                  label="Previous Illnesses / Surgeries"
+                  value={resident.medicalHistory?.previousIllnessesSurgeries}
+                />
+              </div>
+            </section>
+
+            <section className="tab-panel panel-family">
+              <SectionTitle title="Family History" />
+              <div className="space-y-3">
+                <Info
+                  label="Asthma / Allergies"
+                  value={yesNo(resident.familyHistory?.asthmaAllergies)}
+                />
+                <Info
+                  label="Birth Defects"
+                  value={yesNo(resident.familyHistory?.birthDefects)}
+                />
+                <Info
+                  label="Cancer"
+                  value={yesNo(resident.familyHistory?.cancer)}
+                />
+                <Info
+                  label="Dementia"
+                  value={yesNo(resident.familyHistory?.dementia)}
+                />
+                <Info
+                  label="Diabetes"
+                  value={yesNo(resident.familyHistory?.diabetes)}
+                />
+                <Info
+                  label="Hypertension"
+                  value={yesNo(resident.familyHistory?.hypertension)}
+                />
+                <Info
+                  label="Kidney Disease"
+                  value={yesNo(resident.familyHistory?.kidneyDisease)}
+                />
+                <Info
+                  label="Mental Illness"
+                  value={yesNo(resident.familyHistory?.mentalIllness)}
+                />
+              </div>
+            </section>
+
+            <section className="tab-panel panel-social">
+              <SectionTitle title="Personal / Social History" />
+              <div className="space-y-3">
+                <Info
+                  label="Eats Healthy Diet"
+                  value={yesNo(
+                    resident.personalSocialHistory?.eatsHealthyDiet
+                  )}
+                />
+                <Info
+                  label="Adequate Physical Activity"
+                  value={yesNo(
+                    resident.personalSocialHistory?.adequatePhysicalActivity
+                  )}
+                />
+                <Info
+                  label="Sufficient Rest / Sleep"
+                  value={yesNo(
+                    resident.personalSocialHistory?.sufficientRestSleep
+                  )}
+                />
+                <Info
+                  label="Normal Growth / Development"
+                  value={yesNo(
+                    resident.personalSocialHistory?.normalGrowthDevelopment
+                  )}
+                />
+                <Info
+                  label="Multiple Sex Partners"
+                  value={yesNo(
+                    resident.personalSocialHistory?.multipleSexPartners
+                  )}
+                />
+                <Info
+                  label="Smokes Tobacco"
+                  value={yesNo(resident.personalSocialHistory?.smokesTobacco)}
+                />
+                <Info
+                  label="Tobacco Packs Per Year"
+                  value={resident.personalSocialHistory?.tobaccoPacksPerYear}
+                />
+                <Info
+                  label="Drinks Alcohol"
+                  value={yesNo(resident.personalSocialHistory?.drinksAlcohol)}
+                />
+                <Info
+                  label="Alcohol Bottles Per Day"
+                  value={resident.personalSocialHistory?.alcoholBottlesPerDay}
+                />
+                <Info
+                  label="Takes Illicit Drugs"
+                  value={yesNo(
+                    resident.personalSocialHistory?.takesIllicitDrugs
+                  )}
+                />
+                <Info
+                  label="Illicit Drugs Details"
+                  value={resident.personalSocialHistory?.illicitDrugsDetails}
+                />
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </main>
   );
+}
+
+function SectionTitle({ title }: { title: string }) {
+  return (
+    <div className="mb-4">
+      <h2 className="text-xl font-black text-blue-950">{title}</h2>
+      <div className="mt-2 h-1 w-20 rounded-full bg-blue-600" />
+    </div>
+  );
+}
+
+function TwoCols({ children }: { children: React.ReactNode }) {
+  return <div className="grid grid-cols-2 gap-3">{children}</div>;
 }
 
 function Info({ label, value }: { label: string; value: unknown }) {
@@ -132,10 +466,16 @@ function Info({ label, value }: { label: string; value: unknown }) {
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-      <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
+      <p className="text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">
         {label}
       </p>
-      <p className="mt-1 font-semibold text-slate-900">{String(value)}</p>
+      <p className="mt-1 break-words text-sm font-bold text-slate-950">
+        {String(value)}
+      </p>
     </div>
   );
+}
+
+function yesNo(value: boolean | null | undefined) {
+  return value ? "Yes" : "No";
 }

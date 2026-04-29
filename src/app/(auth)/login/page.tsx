@@ -90,54 +90,60 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen bg-[#EFF6FF] px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-7xl overflow-hidden rounded-[32px] border border-[#E5E7EB] bg-white shadow-xl">
-        <section className="relative hidden w-[48%] overflow-hidden lg:flex lg:w-[55%] lg:flex-col lg:justify-between">
+      <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-7xl overflow-hidden rounded-[32px] border border-[#DCEAF7] bg-white shadow-2xl shadow-sky-900/10">
+        <section className="relative hidden w-[60%] overflow-hidden lg:flex lg:flex-col lg:justify-between">
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
               backgroundImage: "url('/images/login-medical-bg.jpg')",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 to-blue-950/80" />
+
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-950/80 via-blue-950/70 to-sky-900/65" />
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-950/85 via-transparent to-slate-950/30" />
 
           <div className="relative z-10 flex h-full flex-col justify-between p-12 text-white">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold backdrop-blur">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-4 py-2 text-sm font-semibold shadow-lg shadow-slate-950/20 backdrop-blur-md">
                 <ShieldCheck className="h-4 w-4" />
                 Secure Health Center Access
               </div>
 
-              <div className="mt-12 max-w-xl">
-                <h1 className="text-5xl font-extrabold leading-tight">
-                  Barangay Health Centers Management System
+              <div className="mt-12 max-w-2xl">
+                <h1 className="text-5xl font-extrabold leading-tight drop-shadow-lg">
+                  Barangay Health Center Management System
                 </h1>
-                <p className="mt-6 text-xl leading-9 text-sky-50/95">
-                  A modern and secure platform for managing patients, health
-                  records, consultations, and daily barangay health center
-                  operations.
+                <p className="mt-6 max-w-xl text-xl leading-9 text-white/95 drop-shadow-md">
+                  A secure and modern platform for managing patient records,
+                  consultations, and daily barangay health center operations.
                 </p>
               </div>
             </div>
 
-            <div className="grid gap-4 xl:grid-cols-2">
+            <div className="grid gap-5 xl:grid-cols-3">
               <InfoCard
                 icon={<HeartPulse className="h-5 w-5" />}
                 title="Patient Records"
-                text="Securely manage resident consultations, health history, and treatment records."
+                text="Securely manage consultations, health history, and treatment records."
               />
               <InfoCard
                 icon={<Stethoscope className="h-5 w-5" />}
                 title="Health Staff Access"
-                text="Provide organized access for doctors, nurses, BHWs, and barangay health staff."
+                text="Organized access for doctors, nurses, BHWs, and health staff."
+              />
+              <InfoCard
+                icon={<ShieldCheck className="h-5 w-5" />}
+                title="Blockchain Security"
+                text="Blockchain-powered security for tamper-proof and trusted health records."
               />
             </div>
           </div>
         </section>
 
-        <section className="flex w-full items-center justify-center bg-[#F8FAFC] px-5 py-8 sm:px-8 lg:w-[45%] lg:px-10">
-          <div className="w-full max-w-xl">
+        <section className="flex w-full items-center justify-center bg-[#F8FAFC] px-5 py-8 sm:px-8 lg:w-[40%] lg:px-10">
+          <div className="w-full max-w-md">
             <div className="mb-8 flex justify-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-[28px] bg-[#0EA5E9] text-white shadow-lg shadow-sky-500/20">
+              <div className="flex h-20 w-20 items-center justify-center rounded-[28px] bg-[#0EA5E9] text-white shadow-lg shadow-sky-500/25 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-sky-500/30">
                 <HeartPulse className="h-10 w-10" />
               </div>
             </div>
@@ -147,7 +153,7 @@ export default function LoginPage() {
                 Welcome
               </h2>
               <p className="mt-3 text-lg text-slate-500">
-                Login to your health center account
+                Log in to your health center account
               </p>
             </div>
 
@@ -180,14 +186,14 @@ export default function LoginPage() {
                   type="button"
                   className="text-sm font-medium text-slate-500 transition hover:text-[#0EA5E9]"
                 >
-                  Forgot your password?
+                  Forgot password?
                 </button>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-2xl bg-[#0EA5E9] px-5 py-4 text-base font-bold uppercase tracking-wide text-white shadow-lg shadow-sky-500/20 transition hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-2xl bg-[#0EA5E9] px-5 py-4 text-base font-bold uppercase tracking-wide text-white shadow-lg shadow-sky-500/25 transition duration-300 hover:-translate-y-0.5 hover:bg-sky-600 hover:shadow-xl hover:shadow-sky-500/30 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? "Logging in..." : "Login"}
               </button>
@@ -202,7 +208,7 @@ export default function LoginPage() {
                 Don&apos;t have an account?{" "}
                 <Link
                   href="/register"
-                  className="font-semibold text-[#0EA5E9] hover:text-sky-600"
+                  className="font-semibold text-[#0EA5E9] transition hover:text-sky-600"
                 >
                   Register Now
                 </Link>
@@ -235,7 +241,7 @@ function Input({
       <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-[#0EA5E9]">
         {label}
       </label>
-      <div className="flex min-h-[54px] items-center rounded-2xl border border-sky-300 bg-white px-4 shadow-sm transition focus-within:border-[#0EA5E9]">
+      <div className="flex min-h-[54px] items-center rounded-2xl border border-sky-300 bg-white px-4 shadow-sm transition duration-300 focus-within:border-[#0EA5E9] focus-within:shadow-md focus-within:shadow-sky-100">
         <span className="mr-3 text-slate-400">{icon}</span>
         <input
           type={type}
@@ -259,12 +265,14 @@ function InfoCard({
   text: string;
 }) {
   return (
-    <div className="rounded-[28px] border border-white/15 bg-white/10 p-6 backdrop-blur">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10">
+    <div className="group rounded-[24px] border border-white/20 bg-white/15 p-5 shadow-lg shadow-slate-950/20 backdrop-blur-md transition duration-300 hover:-translate-y-2 hover:border-sky-200/70 hover:bg-white/20 hover:shadow-2xl hover:shadow-sky-950/30">
+      <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 text-white transition duration-300 group-hover:bg-[#0EA5E9] group-hover:shadow-lg group-hover:shadow-sky-500/30">
         {icon}
       </div>
-      <h3 className="text-2xl font-bold">{title}</h3>
-      <p className="mt-3 text-base leading-8 text-sky-50/90">{text}</p>
+      <h3 className="text-lg font-bold text-white drop-shadow-sm">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-white/90 drop-shadow-sm">
+        {text}
+      </p>
     </div>
   );
 }

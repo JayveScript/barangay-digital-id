@@ -608,9 +608,11 @@ const qrText = [
   `Verified Resident: ${resident.isVerified ? "Yes" : "No"}`,
 ].join("\n");
 
-const profileUrl = `https://barangay-digital-id-pe58.vercel.app/resident/${resident.id}`;
+const profileUrl = `https://barangay-digital-id-git-public-qr-deploy-jayvescripts-projects.vercel.app/resident/${resident.id}`;
 
-const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(profileUrl)}`;
+const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+  profileUrl
+)}`;
 
 
   return (
